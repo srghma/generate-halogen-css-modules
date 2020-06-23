@@ -1,0 +1,17 @@
+resolver: lts-14.18
+
+packages:
+- .
+
+extra-deps:
+- github: srghma/cases
+  commit: a579b01d589f8e533d2978fa4f9ded6a83e281b4
+
+system-ghc: true # nix: enable assumes this option anyway
+
+nix:
+  enable: true
+  pure: true
+  packages: [ zlib ]
+  # shell-file: stack-shell.nix # couldnt make hie to work with "shell-file" way, only with "packages"
+  add-gc-roots: false
