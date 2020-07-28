@@ -1,0 +1,19 @@
+- arguments: [
+  -XQuasiQuotes,
+  -XTypeApplications,
+  -XTemplateHaskell
+  ]
+
+#- modules:
+# - {name: [Data.Set, Data.HashSet], as: Set} # If you import `Data.Set` qualified, it must be as `Set`.
+# - {name: Control.Arrow, within: []} # Certain modules are banned entirely.
+
+- functions:
+  - {name: unsafePerformIO, within: []} # `unsafePerformIO` can appear in no modules.
+
+- group: {name: dollar, enabled: true} # Replace `a $ b $ c` with `a . b $ c`.
+
+# Add custom hints for this project:
+#
+# Will suggest replacing "wibbleMany [myvar]" with "wibbleOne myvar".
+# - error: {lhs: "wibbleMany [x]", rhs: wibbleOne x}

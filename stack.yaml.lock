@@ -5,22 +5,22 @@
 
 packages:
 - completed:
-    size: 4880
-    url: https://github.com/srghma/cases/archive/a579b01d589f8e533d2978fa4f9ded6a83e281b4.tar.gz
-    cabal-file:
-      size: 3587
-      sha256: a4e35c02f5653536693f093d5be1085de148f474309802e75bb9cf4603459370
-    name: cases
-    version: 0.1.3.2
-    sha256: 825893c2e2379bbb7d78f9acbb79bef3616d0426bc59677265dc143a6b232ded
+    hackage: text-ansi-0.1.0@sha256:2112c437a4be5337a3e99b63aa05414bac03f1f6e6f5147048f9c9c5777a1d62,1389
     pantry-tree:
-      size: 400
-      sha256: 86c60ded66d404f9eac9713693424d2b5f7b0bddd6ed8c09ea8ab70e213130df
+      size: 317
+      sha256: d2aa51b82fed1411d86a35e3a0c4bf19e043464017bdda63d6ff5c97c444d5ed
   original:
-    url: https://github.com/srghma/cases/archive/a579b01d589f8e533d2978fa4f9ded6a83e281b4.tar.gz
+    hackage: text-ansi-0.1.0@sha256:2112c437a4be5337a3e99b63aa05414bac03f1f6e6f5147048f9c9c5777a1d62,1389
+- completed:
+    hackage: list-singleton-1.0.0.2@sha256:985c07bd5e44f3e21ff460b474b5fcc3c33c7082eaedf67905378ec707e7c4d0,1100
+    pantry-tree:
+      size: 414
+      sha256: b992fe25c3c892f120936a2b6e5743039151a939682423e9acd68723406c0198
+  original:
+    hackage: list-singleton-1.0.0.2@sha256:985c07bd5e44f3e21ff460b474b5fcc3c33c7082eaedf67905378ec707e7c4d0,1100
 snapshots:
 - completed:
-    size: 524789
-    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/18.yaml
-    sha256: 646be71223e08234131c6989912e6011e01b9767bc447b6d466a35e14360bdf2
-  original: lts-14.18
+    size: 525876
+    url: https://raw.githubusercontent.com/commercialhaskell/stackage-snapshots/master/lts/14/13.yaml
+    sha256: 4a0e79eb194c937cc2a1852ff84d983c63ac348dc6bad5f38d20cab697036eef
+  original: lts-14.13

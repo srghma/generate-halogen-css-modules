@@ -19,6 +19,40 @@ extra-source-files:
 # common to point users to the README.md file.
 description:         Please see the README on GitHub at <https://github.com/srghma/generate-halogen-css-modules#readme>
 
+default-extensions:
+  - BangPatterns
+  - ConstraintKinds
+  - DataKinds
+  - DefaultSignatures
+  - DeriveDataTypeable
+  - DeriveGeneric
+  - DeriveLift
+  - DuplicateRecordFields
+  - FlexibleContexts
+  - FlexibleInstances
+  - FunctionalDependencies
+  - GADTs
+  - GeneralizedNewtypeDeriving
+  - InstanceSigs
+  - LambdaCase
+  - MultiParamTypeClasses
+  - MultiWayIf
+  - NamedFieldPuns
+  - NoImplicitPrelude
+  - OverloadedStrings
+  - PackageImports
+  - QuasiQuotes
+  - RecordWildCards
+  - ScopedTypeVariables
+  - StandaloneDeriving
+  - TemplateHaskell
+  - TupleSections
+  - TypeApplications
+  - TypeFamilies
+  - ViewPatterns
+  - DerivingStrategies
+  - BlockArguments
+
 dependencies:
 - base >= 4.7 && < 5
 - turtle
@@ -29,6 +63,16 @@ dependencies:
 - foldl
 - directory-tree
 - cases
+- optparse-applicative
+- hspec-discover
+- containers
+- string-qq
+- hspec
+- regex-base
+- regex-pcre
+- regex-with-pcre
+- regex
+- async
 
 library:
   source-dirs: src
@@ -36,7 +80,7 @@ library:
 executables:
   generate-halogen-css-modules-exe:
     main:                Main.hs
-    source-dirs:         app
+    source-dirs:         cli
     ghc-options:
     - -threaded
     - -rtsopts

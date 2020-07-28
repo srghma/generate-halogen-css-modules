@@ -1,17 +1,36 @@
-resolver: lts-14.18
+resolver: lts-14.13
+
+nix:
+  enable: true
+  shell-file: stack-shell.nix
 
 packages:
 - .
 
 extra-deps:
-- github: srghma/cases
-  commit: a579b01d589f8e533d2978fa4f9ded6a83e281b4
+  - text-ansi-0.1.0@sha256:2112c437a4be5337a3e99b63aa05414bac03f1f6e6f5147048f9c9c5777a1d62,1389
+  - list-singleton-1.0.0.2@sha256:985c07bd5e44f3e21ff460b474b5fcc3c33c7082eaedf67905378ec707e7c4d0,1100
 
-system-ghc: true # nix: enable assumes this option anyway
+# Override default flag values for local packages and extra-deps
+# flags: {}
 
-nix:
-  enable: true
-  pure: true
-  packages: [ zlib ]
-  # shell-file: stack-shell.nix # couldnt make hie to work with "shell-file" way, only with "packages"
-  add-gc-roots: false
+# Extra package databases containing global packages
+# extra-package-dbs: []
+
+# Control whether we use the GHC we find on the path
+# system-ghc: true
+#
+# Require a specific version of stack, using version ranges
+# require-stack-version: -any # Default
+# require-stack-version: ">=1.9"
+#
+# Override the architecture used by stack, especially useful on Windows
+# arch: i386
+# arch: x86_64
+#
+# Extra directories used by stack for building
+# extra-include-dirs: [/path/to/dir]
+# extra-lib-dirs: [/path/to/dir]
+#
+# Allow a newer minor version of GHC than the snapshot specifies
+# compiler-check: newer-minor
