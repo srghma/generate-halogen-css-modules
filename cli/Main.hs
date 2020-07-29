@@ -23,29 +23,34 @@ import qualified "turtle" Turtle
 import "turtle" Turtle ((</>))
 import qualified "directory" System.Directory
 import qualified "filepath" System.FilePath
-import "base" Data.String
-import "base" Data.List
-import "text" Data.Text
-import qualified "foldl" Control.Foldl
+import qualified "system-filepath" Filesystem.Path
+import "base" Data.String (String)
+import qualified "base" Data.String as String
+import qualified "base" Data.List as List
+import qualified Data.List.Index as List
+import qualified "text" Data.Text as Text
+import qualified Data.List.NonEmpty (NonEmpty)
+import qualified Data.List.NonEmpty as NonEmpty
 import qualified "directory-tree" System.Directory.Tree
 import "directory-tree" System.Directory.Tree (DirTree (..), AnchoredDirTree (..))
 import qualified "cases" Cases
 import Control.Concurrent.Async
 import CssContentToTypes
 
-newtype PathToModule = PathToModule [Text]
+newtype PathToModule = PathToModule { unPathToModule :: NonEmpty Text }
+  deriving (Show)
 
 filterDirTreeByFilename :: (String -> Bool) -> DirTree a -> Bool
 filterDirTreeByFilename _ (Dir ('.':_) _) = False
 filterDirTreeByFilename pred (File n _) = pred n
 filterDirTreeByFilename _ _ = True
 
-dirTreeToFileList :: DirTree a -> IO [(Turtle.FilePath, a)]
-dirTreeToFileList (Failed name err) = Turtle.die $ "Dir tree error: filename " <> show name <> ", error " <> show err
-dirTreeToFileList (File name a) = pure [(Turtle.decodeString name, a)]
-dirTreeToFileList (Dir name contents) = do
-  output :: [[(Turtle.FilePath, a)]] <- traverse dirTreeToFileList contents
-  pure (join output)
+dirTreeContent :: DirTree a -> IO [a]
+dirTreeContent (Failed name err) = Turtle.die $ "Dir tree error: filename " <> show name <> ", error " <> show err
+dirTreeContent (File fileName a) = pure [a]
+dirTreeContent (Dir dirName contents) = do
+  output :: [[a]] <- traverse dirTreeContent contents
+  pure $ join output
 
 anyCaseToCamelCase :: Text -> Text
 anyCaseToCamelCase = Cases.process Cases.title Cases.camel -- first letter is always upper
@@ -68,63 +73,82 @@ appOptionsParserInfo = info (appOptionsParser <**> helper)
   <> progDesc "Halogen FFI generator for webpack css modules"
   <> header "Based on Anyname.module.css, generates Anyname.purs and Anyname.js files" )
 
-fullPathToPathToModule :: Turtle.FilePath -> System.FilePath.FilePath -> IO PathToModule
+-- Example:
+-- baseDir - /home/srghma/projects/purescript-halogen-nextjs/app/
+-- filePath - /home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons/CSS.module.css
+-- output - ["Nextjs","Pages","Buttons","CSS"]
+fullPathToPathToModule :: Turtle.FilePath -> Turtle.FilePath -> IO PathToModule
 fullPathToPathToModule baseDir fullPath = do
-  let fullPath' :: Turtle.FilePath = Turtle.decodeString fullPath
-  fullPath'' :: Turtle.FilePath <- maybe (Turtle.die $ "Cannot strip baseDir " <> show baseDir <> " from path " <> show fullPath) pure $ Turtle.stripPrefix baseDir fullPath'
-  let modulePathWithoutRoot :: [Text] = fmap (toS . Turtle.encodeString)  . Turtle.splitDirectories . Turtle.dropExtension $ fullPath''
-  pure (PathToModule modulePathWithoutRoot)
+  fullPath'' :: Turtle.FilePath <- maybe (Turtle.die $ "Cannot strip baseDir " <> show baseDir <> " from path " <> show fullPath) pure $ Turtle.stripPrefix baseDir fullPath
+  let modulePathWithoutRoot :: [Text] = fmap (toS . stripSuffix "/" . Turtle.encodeString) . Turtle.splitDirectories . Filesystem.Path.dropExtensions $ fullPath''
+
+  modulePathWithoutRoot' :: NonEmpty Text <- maybe (Turtle.die $ "should be nonEmpty modulePathWithoutRoot for" <> show baseDir <> " from path " <> show fullPath) pure $ NonEmpty.nonEmpty modulePathWithoutRoot
+
+  pure (PathToModule modulePathWithoutRoot')
+
+appendIfNotAlreadySuffix :: Eq a => [a] -> [a] -> [a]
+appendIfNotAlreadySuffix suffix target =
+  if List.isSuffixOf suffix target
+     then target
+     else target ++ suffix
+
+stripSuffix :: Eq a => [a] -> [a] -> [a]
+stripSuffix suffix target =
+  if List.isSuffixOf suffix target
+     then List.reverse $ List.drop (List.length suffix) $ List.reverse target
+     else target
+
+-- make it end with /
+makeValidDirectory :: Turtle.FilePath -> Turtle.FilePath
+makeValidDirectory = Turtle.decodeString . appendIfNotAlreadySuffix "/" . Turtle.encodeString
 
 main :: IO ()
 main = do
   appOptions <- execParser appOptionsParserInfo
 
-  _base :/ (dirTree :: DirTree PathToModule) <- liftIO $ System.Directory.Tree.readDirectoryWith (fullPathToPathToModule (directory appOptions)) (Turtle.encodeString (directory appOptions))
+  let baseDir = makeValidDirectory $ directory appOptions -- ending with /
 
-  let (dirTreeWithCssFiles :: DirTree PathToModule) =
+  -- liftIO $ putStrLn $ "baseDir " <> Turtle.encodeString baseDir
+
+  -- contains absolute path inside
+  _base :/ (dirTree :: DirTree FilePath) <- liftIO $ System.Directory.Tree.readDirectoryWith return (Turtle.encodeString baseDir)
+
+  let (dirTreeWithCssFiles :: DirTree FilePath) =
         System.Directory.Tree.filterDir
           (filterDirTreeByFilename (\n -> System.FilePath.takeExtensions n == ".module.css"))
           dirTree
 
-  filePaths :: [(Turtle.FilePath, PathToModule)] <- liftIO $ dirTreeToFileList dirTreeWithCssFiles
+  filePaths :: [Turtle.FilePath] <- map Turtle.decodeString <$> dirTreeContent dirTreeWithCssFiles
 
-  forConcurrently_ filePaths \(filePath, pathToModule) -> Turtle.sh $ do
+  forConcurrently_ filePaths \(filePath) -> Turtle.sh $ do
     liftIO $ putStrLn $ "processing " <> Turtle.encodeString filePath
 
     cssFileContent <- liftIO $ Turtle.readTextFile filePath
 
     let (classNames :: [Text]) = cssContentToTypes cssFileContent
 
-    liftIO $ putStrLn @Text $ "output " <> show classNames
-    -- liftIO $ Turtle.writeTextFile (projectRoot </> "test/" </> "AllTests.purs") fileContent
+    pathToModule <- liftIO $ fullPathToPathToModule baseDir filePath
 
-    pure ()
+    -- liftIO $ putStrLn @Text $ "output " <> show classNames
+    -- liftIO $ putStrLn @Text $ "pathToModule " <> show pathToModule
 
-    -- let imports = Data.Text.unlines $ specNameList <&> (
-    --       \(specName :: SpecName) ->
-    --         let specPath = Data.Text.intercalate "." specName
-    --         in "import " <> specPath <> " as " <> specPath
-    --       )
+    let fileModuleName :: Text = NonEmpty.last (unPathToModule pathToModule)
 
-    -- let specsWrappedInDecribesAndIt :: Text = specTreeToSpecsWrappedInDecribesAndIt (removeCommonLayer specTree)
+    let jsFilePath :: Turtle.FilePath = Turtle.directory filePath Turtle.</> Turtle.decodeString (toS fileModuleName) Turtle.<.> "js"
+    let pursFilePath :: Turtle.FilePath = Turtle.directory filePath Turtle.</> Turtle.decodeString (toS fileModuleName) Turtle.<.> "purs"
 
-    -- let fileContent :: Text = Data.Text.unlines
-    --       [ "module Test.AllTests where"
-    --       , ""
-    --       , "import Prelude"
-    --       , ""
-    --       , "import Test.Spec (describe)"
-    --       , ""
-    --       , "import Lib.FeatureTest (FeatureTestSpecInternal, it)"
-    --       , ""
-    --       , imports
-    --       , ""
-    --       , "allTests :: FeatureTestSpecInternal Unit"
-    --       , "allTests = do"
-    --       , specsWrappedInDecribesAndIt
-    --       ]
+    liftIO $ putStrLn $ "  writing " <> Turtle.encodeString jsFilePath
+    liftIO $ putStrLn $ "  writing " <> Turtle.encodeString pursFilePath
 
-    -- -- liftIO $ putStrLn fileContent
-    -- liftIO $ Turtle.writeTextFile (projectRoot </> "test/" </> "AllTests.purs") fileContent
-
-    -- return ()
+    liftIO $ Turtle.writeTextFile jsFilePath ("exports.styles = require('./" <> fileModuleName <> ".module.css')")
+    liftIO $ Turtle.writeTextFile pursFilePath
+      ( let imports = Text.unlines $ List.imap (\(index) (className :: Text) -> (if index == 0 then "  { " else "  , ") <> className <> " :: ClassName") classNames
+        in Text.unlines
+          [ "module Nextjs.Pages.Buttons.CSS (styles) where"
+          , ""
+          , "import Halogen.HTML (ClassName)"
+          , ""
+          , "foreign import styles ::"
+          , imports <> "  }"
+          ]
+      )
