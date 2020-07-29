@@ -1,3 +1,7 @@
+# generate-halogen-css-modules
+
+Generate FFI for css files ending with `.module.css`
+
 # How it works
 
 having in `/home/srghma/projects/purescript-halogen-nextjs/app/Nextjs/Pages/Buttons/CSS.module.css`
