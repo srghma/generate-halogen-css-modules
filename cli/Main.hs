@@ -142,13 +142,17 @@ main = do
 
     liftIO $ Turtle.writeTextFile jsFilePath ("exports.styles = require('./" <> fileModuleName <> ".module.css')")
     liftIO $ Turtle.writeTextFile pursFilePath
-      ( let imports = Text.unlines $ List.imap (\(index) (className :: Text) -> (if index == 0 then "  { " else "  , ") <> className <> " :: ClassName") classNames
+      ( let
+          imports = Text.unlines $ List.imap (\(index) (className :: Text) -> (if index == 0 then "  { " else "  , ") <> className <> " :: ClassName") classNames
+          styles =
+            if List.length classNames == 0
+               then "foreign import styles :: {}"
+               else "foreign import styles ::\n" <> imports <> "  }"
         in Text.unlines
           [ "module Nextjs.Pages.Buttons.CSS (styles) where"
           , ""
           , "import Halogen.HTML (ClassName)"
           , ""
-          , "foreign import styles ::"
-          , imports <> "  }"
+          , styles
           ]
       )
