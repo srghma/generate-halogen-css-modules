@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 21c76285c06e1d0feb29c5d7e5d4f73794cb595f2f805e8ae835729e587e7df1
+-- hash: cae32cc58f3dab05c9f1c13971456ffcca957cea1084d613fca4fc350e205c3a
 
 name:           generate-halogen-css-modules
 version:        0.1.0.0
@@ -38,6 +38,7 @@ library
     , base >=4.7 && <5
     , cases
     , containers
+    , css-text
     , directory
     , directory-tree
     , filepath
@@ -70,6 +71,7 @@ executable generate-halogen-css-modules-exe
     , base >=4.7 && <5
     , cases
     , containers
+    , css-text
     , directory
     , directory-tree
     , filepath
@@ -105,6 +107,7 @@ test-suite generate-halogen-css-modules-test
     , base >=4.7 && <5
     , cases
     , containers
+    , css-text
     , directory
     , directory-tree
     , filepath

@@ -75,6 +75,7 @@ dependencies:
 - async
 - system-filepath
 - ilist
+- css-text
 
 library:
   source-dirs: src
