@@ -10,6 +10,9 @@ packages:
 extra-deps:
   - text-ansi-0.1.0@sha256:2112c437a4be5337a3e99b63aa05414bac03f1f6e6f5147048f9c9c5777a1d62,1389
   - list-singleton-1.0.0.2@sha256:985c07bd5e44f3e21ff460b474b5fcc3c33c7082eaedf67905378ec707e7c4d0,1100
+  - git: git@github.com:EarlGray/css-text.git
+    commit: a4b5df86a29f2b4dfcccd05c088d98ae3de746b3
+
 
 # Override default flag values for local packages and extra-deps
 # flags: {}
