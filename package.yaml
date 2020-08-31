@@ -75,7 +75,8 @@ dependencies:
 - async
 - system-filepath
 - ilist
-- css-text
+- scss-format
+- megaparsec
 
 library:
   source-dirs: src

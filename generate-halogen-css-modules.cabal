@@ -1,10 +1,10 @@
 cabal-version: 1.12
 
--- This file has been generated from package.yaml by hpack version 0.33.0.
+-- This file has been generated from package.yaml by hpack version 0.34.2.
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: cae32cc58f3dab05c9f1c13971456ffcca957cea1084d613fca4fc350e205c3a
+-- hash: 160f022aba82a7101df5a543b5fd6c83d73d08c3d6c15baa306f7a66f0939dc3
 
 name:           generate-halogen-css-modules
 version:        0.1.0.0
@@ -38,7 +38,6 @@ library
     , base >=4.7 && <5
     , cases
     , containers
-    , css-text
     , directory
     , directory-tree
     , filepath
@@ -46,12 +45,14 @@ library
     , hspec
     , hspec-discover
     , ilist
+    , megaparsec
     , optparse-applicative
     , protolude
     , regex
     , regex-base
     , regex-pcre
     , regex-with-pcre
+    , scss-format
     , string-qq
     , system-filepath
     , text
@@ -71,7 +72,6 @@ executable generate-halogen-css-modules-exe
     , base >=4.7 && <5
     , cases
     , containers
-    , css-text
     , directory
     , directory-tree
     , filepath
@@ -80,12 +80,14 @@ executable generate-halogen-css-modules-exe
     , hspec
     , hspec-discover
     , ilist
+    , megaparsec
     , optparse-applicative
     , protolude
     , regex
     , regex-base
     , regex-pcre
     , regex-with-pcre
+    , scss-format
     , string-qq
     , system-filepath
     , text
@@ -107,7 +109,6 @@ test-suite generate-halogen-css-modules-test
     , base >=4.7 && <5
     , cases
     , containers
-    , css-text
     , directory
     , directory-tree
     , filepath
@@ -116,12 +117,14 @@ test-suite generate-halogen-css-modules-test
     , hspec
     , hspec-discover
     , ilist
+    , megaparsec
     , optparse-applicative
     , protolude
     , regex
     , regex-base
     , regex-pcre
     , regex-with-pcre
+    , scss-format
     , string-qq
     , system-filepath
     , text
