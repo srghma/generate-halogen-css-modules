@@ -4,7 +4,7 @@ cabal-version: 1.12
 --
 -- see: https://github.com/sol/hpack
 --
--- hash: 160f022aba82a7101df5a543b5fd6c83d73d08c3d6c15baa306f7a66f0939dc3
+-- hash: 82de756055ad9e795ad553e6e0183786ddba22bfdc24c2ce23accfca9bdf5380
 
 name:           generate-halogen-css-modules
 version:        0.1.0.0
@@ -46,6 +46,7 @@ library
     , hspec-discover
     , ilist
     , megaparsec
+    , mtl
     , optparse-applicative
     , protolude
     , regex
@@ -81,6 +82,7 @@ executable generate-halogen-css-modules-exe
     , hspec-discover
     , ilist
     , megaparsec
+    , mtl
     , optparse-applicative
     , protolude
     , regex
@@ -118,6 +120,7 @@ test-suite generate-halogen-css-modules-test
     , hspec-discover
     , ilist
     , megaparsec
+    , mtl
     , optparse-applicative
     , protolude
     , regex
